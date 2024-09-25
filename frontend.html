@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="i-icon" href="main.jpg">
+
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://media.istockphoto.com/id/1370962549/vector/violet-purple-pink-and-navy-blue-defocused-blurred-motion-gradient-abstract-background-vector.jpg?s=612x612&w=0&k=20&c=A6ArKVzCqEArn9ORyAYm78kbKyI47t2U2QWuHnwUkVg='); /* Update this path to match your image location */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+        }
+        .container {
+            width: 400px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.494); /* Semi-transparent white background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        .input-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #e922bb;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 60%;
+            padding: 12px;
+            background-color: #112cb1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
+        button:hover {
+            background-color: #1d0e7b;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            text-emphasis-color: #1d0e7b;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+    </style>
+    
+</head>
+<body>
+
+<div class="container">
+    <h2>Download YouTube Video</h2>
+    <input type="text" id="urlInput" placeholder="Enter YouTube Video URL">
+    <button onclick="downloadVideo()">Download</button>
+    <div class="loading" id="loading">Loading... Please wait.</div>
+    <div class="message" id="message"></div>
+</div>
+
+<!-- JavaScript to handle video download -->
+<script>
+    async function downloadVideo() {
+        const url = document.getElementById('urlInput').value;
+        const messageDiv = document.getElementById('message');
+        const loadingDiv = document.getElementById('loading');
+
+        // Clear previous messages
+        messageDiv.innerHTML = "";
+        loadingDiv.style.display = "none";
+
+        if (!url) {
+            messageDiv.innerHTML = "Please enter a YouTube video URL!";
+            messageDiv.style.color = "red";
+            return;
+        }
+
+        // Show loading message
+        loadingDiv.style.display = "block";
+        messageDiv.style.color = "green";
+
+        // Prepare form data for POST request
+        const formData = new FormData();
+        formData.append('url', url);
+
+        try {
+            // Send POST request to backend
+            const response = await fetch('http://127.0.0.1:8000/yt', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            // Hide loading message
+            loadingDiv.style.display = "none";
+
+            if (response.ok) {
+                messageDiv.innerHTML = "Downloaded Successfully!";
+                messageDiv.style.color = "green";
+
+            } else {
+                messageDiv.innerHTML = "Error: " + data.detail;
+                messageDiv.style.color = "red";
+            }
+        } catch (error) {
+            // Hide loading message
+            loadingDiv.style.display = "none";
+
+            messageDiv.innerHTML = "Error: Unable to download video.";
+            messageDiv.style.color = "red";
+            console.error("Error:", error);
+        }
+    }
+</script>
+
+</body>
+</html>
